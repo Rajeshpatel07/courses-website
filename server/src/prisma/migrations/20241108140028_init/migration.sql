@@ -4,7 +4,8 @@ CREATE TABLE `user` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
-    `type` VARCHAR(191) NOT NULL DEFAULT 'user',
+    `image` VARCHAR(191) NOT NULL DEFAULT 'https://cdn.pixabay.com/photo/2021/07/25/08/03/account-6491185_1280.png',
+    `role` VARCHAR(191) NOT NULL DEFAULT 'user',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `user_email_key`(`email`),
@@ -15,10 +16,13 @@ CREATE TABLE `user` (
 CREATE TABLE `blog` (
     `id` VARCHAR(191) NOT NULL,
     `title` VARCHAR(191) NOT NULL,
-    `content` VARCHAR(191) NOT NULL,
+    `content` LONGTEXT NOT NULL,
+    `image` TEXT NOT NULL,
+    `desc` TEXT NOT NULL,
     `published` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `userId` VARCHAR(191) NOT NULL,
+    `scheduledAt` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -27,9 +31,10 @@ CREATE TABLE `blog` (
 CREATE TABLE `course` (
     `id` VARCHAR(191) NOT NULL,
     `title` VARCHAR(191) NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
+    `image` TEXT NOT NULL,
+    `description` LONGTEXT NOT NULL,
     `price` VARCHAR(191) NOT NULL,
-    `discounted_price` VARCHAR(191) NOT NULL,
+    `discountedPrice` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 

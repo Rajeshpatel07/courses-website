@@ -9,14 +9,16 @@ import {
   newBlog,
   newCourse,
   newUser,
+  publishSheduledBlog,
 } from "../db/db.js";
+import { scheduleOneTimeTask } from "../services/schedule.js";
 
 export const home = (req, res) => {
   return res.status(200).json({ message: "check OK" });
 };
 
 export const signup = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
   if (!username || !email || !password)
     return res.status(400).json({ err: "All fields are mandatory" });
 
@@ -26,7 +28,7 @@ export const signup = async (req, res) => {
       return res.status(400).json({ err: "user already exist on this email" });
     }
     const hashpass = await hash(password, 10);
-    const user = await newUser(username, email, hashpass);
+    const user = await newUser(username, email, hashpass, role);
     if (!user) {
       return res.status(500).json({ err: "error while createing user" });
     }
@@ -51,14 +53,16 @@ export const login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ err: "Incorrect password" });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, role: user.role },
       process.env.ACCESS_SECRET,
-      { expiresIn: "1d" },
     );
-    res.cookie("acToken", token, { maxAge: 1000 * 60 * 24 * 1 });
+
+    const cookieName = user.role === "admin" ? "adminAcToken" : "acToken";
+    res.cookie(cookieName, token, { maxAge: 1000 * 60 * 60 * 24 });
+
     return res
       .status(200)
-      .json({ message: "Login successful", userId: user.id });
+      .json({ message: "Login successful", userId: user.id, role: user.role });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ err: "Server error" });
@@ -66,13 +70,26 @@ export const login = async (req, res) => {
 };
 
 export const createBlog = async (req, res) => {
-  const { title, content, scheduledAt, userId } = req.body;
-  if (!title || !content) {
+  const { title, content, scheduledAt, userId, published, image, desc } =
+    req.body;
+  if (!title || !content || !image || !desc) {
     return res.status(400).json({ err: "Title and content are required" });
   }
 
   try {
-    const blog = await newBlog(title, content, scheduledAt, userId);
+    const date = scheduledAt ? scheduledAt.date : null;
+    const blog = await newBlog(
+      title,
+      content,
+      date,
+      userId,
+      published,
+      image,
+      desc,
+    );
+    if (scheduledAt !== null) {
+      scheduleOneTimeTask(scheduledAt, publishSheduledBlog(blog.id));
+    }
     if (!blog) {
       return res.status(500).json({ err: "error while crateing blog" });
     }
@@ -84,16 +101,22 @@ export const createBlog = async (req, res) => {
 };
 
 export const createCourse = async (req, res) => {
-  const { title, description, price, discounted_price } = req.body;
+  const { title, description, price, discountPrice, imageUrl } = req.body;
 
-  if (!title || !description || !price) {
+  if (!title || !description || !price || !imageUrl) {
     return res
       .status(400)
-      .json({ err: "Title, description, and price are required" });
+      .json({ err: "Title, description, price and image are required" });
   }
 
   try {
-    const course = await newCourse(title, description, price, discounted_price);
+    const course = await newCourse(
+      title,
+      description,
+      price,
+      discountPrice,
+      imageUrl,
+    );
     if (!course) {
       return res.status(500).json({ err: "error while creating course" });
     }

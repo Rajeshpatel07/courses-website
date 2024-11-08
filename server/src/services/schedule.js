@@ -1,16 +1,27 @@
 import cron from "node-cron";
-import { updateBlogPublishStatus } from "../db/db.js";
+import fns from "data-fns";
 
-cron.schedule("*/5 * * * *", async () => {
-  const now = new Date();
-  try {
-    const scheduledBlogs = await db.blog.findMany({
-      where: { scheduledAt: { lte: now }, published: false },
-    });
-    scheduledBlogs.forEach(async (blog) => {
-      await updateBlogPublishStatus(blog.id, true);
-    });
-  } catch (err) {
-    console.error("Error updating blog status:", err);
-  }
-});
+// Helper function to calculate cron expression from a specific date and time
+const calculateCronExpression = (date, time) => {
+  const newDate = `${date}T${time}:00`;
+  const targetDateTime = new Date(newDate);
+  console.log("newDate", newDate, "==>", "target", targetDateTime);
+
+  const minute = targetDateTime.getMinutes();
+  const hour = targetDateTime.getHours();
+  const day = targetDateTime.getDate();
+  const month = targetDateTime.getMonth() + 1;
+
+  return `${minute} ${hour} ${day} ${month} *`;
+};
+
+export const scheduleOneTimeTask = ({ date, time }, task) => {
+  const cronExpression = calculateCronExpression(date, time);
+
+  const job = cron.schedule(cronExpression, () => {
+    task();
+    job.stop();
+  });
+
+  console.log(`Task scheduled with cron expression: ${cronExpression}`);
+};
