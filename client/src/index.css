@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  font-family: 'Arial', sans-serif;
+}
+
+.prose {
+  max-width: 800px;
+}
+
+.bg-gray-100 {
+  background-color: #f7fafc; /* A lighter gray for the preview */
+}
+
+.bg-white {
+  background-color: #ffffff; /* White background for inputs */
+}
+
+.border-gray-300 {
+  border-color: #d1d5db; /* Light gray border */
+}
+
+.text-gray-700 {
+  color: #374151; /* Darker gray for text */
+}
+
+.hover\:bg-blue-700:hover {
+  background-color: #1e40af; /* Darker blue on hover */
+}
+
+/* Add additional custom styles as needed */

@@ -16,6 +16,7 @@ model user {
   role      String    @default("user")
   createdAt DateTime  @default(now())
   blog      blog[]
+  course    course[]
   payment   payment[]
 }
 
@@ -33,15 +34,17 @@ model blog {
 }
 
 model course {
-  id               String    @id @default(uuid())
-  title            String
-  image            String   @db.Text
-  description      String    @db.LongText
-  price            String
+  id              String    @id @default(uuid())
+  title           String
+  image           String    @db.Text
+  description     String    @db.LongText
+  price           String
   discountedPrice String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @default(now())
-  payment          payment[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  userId          String
+  creator         user      @relation(fields: [userId], references: [id])
+  payment         payment[]
 }
 
 model payment {

@@ -56,6 +56,7 @@ export const newCourse = async (
   price,
   discountedPrice,
   image,
+  userId,
 ) => {
   const course = await prisma.course.create({
     data: {
@@ -63,6 +64,7 @@ export const newCourse = async (
       description,
       image,
       price,
+      userId,
       discountedPrice: discountedPrice || price,
     },
   });
@@ -114,6 +116,15 @@ export const getAllBlogs = async () => {
 export const getCourse = async (courseId) => {
   const course = await prisma.course.findUnique({
     where: { id: courseId },
+    include: {
+      creator: {
+        select: {
+          username: true,
+          id: true,
+          image: true,
+        },
+      },
+    },
   });
   return course ? course : null;
 };

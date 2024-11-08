@@ -101,9 +101,10 @@ export const createBlog = async (req, res) => {
 };
 
 export const createCourse = async (req, res) => {
-  const { title, description, price, discountPrice, imageUrl } = req.body;
+  const { title, description, price, discountPrice, imageUrl, userId } =
+    req.body;
 
-  if (!title || !description || !price || !imageUrl) {
+  if (!title || !description || !price || !imageUrl || !userId) {
     return res
       .status(400)
       .json({ err: "Title, description, price and image are required" });
@@ -116,6 +117,7 @@ export const createCourse = async (req, res) => {
       price,
       discountPrice,
       imageUrl,
+      userId,
     );
     if (!course) {
       return res.status(500).json({ err: "error while creating course" });
