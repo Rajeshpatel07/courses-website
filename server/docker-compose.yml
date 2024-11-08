@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: 
+      - website
+    volumes:  # Corrected 'volume' to 'volumes'
+      - website-data:/etc/mysql/services.mysql
+
+  course:
+    build: .
+    ports:
+      - 5000:5000
+    restart: always
+    networks:
+      - website
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  website-data:
+
+networks:
+  website:
