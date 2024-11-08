@@ -21,16 +21,15 @@ model user {
 }
 
 model blog {
-  id          String    @id @default(uuid())
-  title       String
-  content     String    @db.LongText
-  image       String    @db.Text
-  desc        String    @db.Text
-  published   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  userId      String
-  Author      user      @relation(references: [id], fields: [userId])
-  scheduledAt DateTime?
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.LongText
+  image     String   @db.Text
+  desc      String   @db.Text
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  Author    user     @relation(references: [id], fields: [userId])
 }
 
 model course {

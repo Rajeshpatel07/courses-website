@@ -77,16 +77,7 @@ export const createBlog = async (req, res) => {
   }
 
   try {
-    const date = scheduledAt ? scheduledAt.date : null;
-    const blog = await newBlog(
-      title,
-      content,
-      date,
-      userId,
-      published,
-      image,
-      desc,
-    );
+    const blog = await newBlog(title, content, userId, published, image, desc);
     if (scheduledAt !== null) {
       scheduleOneTimeTask(scheduledAt, publishSheduledBlog(blog.id));
     }

@@ -27,7 +27,6 @@ export const newUser = async (username, email, password, role) => {
 export const newBlog = async (
   title,
   content,
-  scheduledAt,
   userId,
   published,
   image,
@@ -37,7 +36,6 @@ export const newBlog = async (
     data: {
       title,
       content,
-      scheduledAt: scheduledAt || null,
       userId,
       published,
       image,
